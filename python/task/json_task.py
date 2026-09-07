@@ -4,7 +4,7 @@ import uuid
 
 
 def ragister():
-
+    
     deatail = {}
 
     deatail["id"] = str(uuid.uuid4().int)[:3]
