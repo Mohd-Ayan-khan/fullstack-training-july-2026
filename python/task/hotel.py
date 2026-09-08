@@ -4,7 +4,6 @@ import uuid
 import datetime
 
 
-
 class Table:
 
     def __init__(self, table_id, table_size, table_time, table_duration):
@@ -26,12 +25,9 @@ class Table:
             "end_time": end_time.strftime("%d-%m-%Y %I:%M:%S %p")
         }
 
-        try:
-            with open("python/task/hotel_data.json", "r") as file:
-                booking = json.load(file)
-
-        except Exception:
-            booking = []
+        
+        with open("python/task/hotel_data.json", "r") as file:
+            booking = json.load(file)
 
         booking.append(data)
 
@@ -48,12 +44,64 @@ class Table:
         print("Duration :", self.table_duration, "hours")
         print("End Time :",end_time.strftime("%d-%m-%Y %I:%M:%S %p"))
 
+def time_count():
+
+    with open("python/task/hotel_data.json", "r") as file:
+        hotel = json.load(file)
+
+    with open("python/task/available_table.json", "r") as file:
+        table = json.load(file)
+
+    now = datetime.datetime.now()
+
+    remaining_booking = []
+
+    for user in hotel:
+
+        end_time = datetime.datetime.strptime(
+            user["end_time"],
+            "%d-%m-%Y %I:%M:%S %p"
+        )
+
+        if now >= end_time:
+
+            if user["table_size"] == "vip":
+                table["vip_table"] += 1
+
+            elif user["table_size"] == "medium":
+                table["medium_table"] += 1
+
+            elif user["table_size"] == "short":
+                table["short_table"] += 1
+
+            print("--------------------")
+            print("Table is available again")
+            print("Table ID :", user["table_id"])
+            print("--------------------")
+
+        else:
+
+            remaining_booking.append(user)
+
+            print("--------------------")
+            print("Time is not complete")
+            print("--------------------")
+
+    with open("python/task/hotel_data.json", "w") as file:
+        json.dump(remaining_booking, file, indent=4)
+
+    with open("python/task/available_table.json", "w") as file:
+        json.dump(table, file, indent=4)
+            
+
 
 class Menu:
 
     def menu(self):
 
         while True:
+            
+            time_count()
 
             print("====================")
             print("--- Booking Menu ---")
@@ -141,7 +189,6 @@ class Menu:
                 print("-------------------")
                 print("Thanks for visiting")
                 print("-------------------")
-
                 break
 
             else:
